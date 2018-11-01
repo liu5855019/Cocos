@@ -1,4 +1,5 @@
 import Animal from "./Animal";
+import Player from "./Player";
 
 // Learn TypeScript:
 //  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -22,11 +23,31 @@ export default class GameController extends cc.Component {
 
     @property(cc.Node) item: cc.Node = null;
     @property([cc.Node]) nodes: Array<cc.Node> = [];        //front node
+
+    @property(cc.Label) stateLab: cc.Label = null;          //标识自己是什么阵容
+    @property(cc.Label) stepLab: cc.Label = null;           //标识该谁出手了
+
     
     time = 0;
     datas = [];
     result = [ [] ];
     
+    me : Player = new Player();
+    other : Player = new Player();
+
+    _isMe = true;   // 当前要操作的角色是不是我
+    public set isMe(v : boolean) {
+        this._isMe = v;
+        this.updateStepLab();
+    }
+    public get isMe() :boolean  {
+        return this._isMe;
+    }
+    
+    
+
+    selectdV2:cc.Vec2 = null;       // 如果是me操作,可能要操作两次,保存下来第一次选择的v2
+
 
 
     start() {
@@ -39,6 +60,8 @@ export default class GameController extends cc.Component {
         nums = this.randomSort(nums);
         this.setupPositions(nums);
 
+        this.stateLab.string = "游戏开始,请翻牌";
+        this.stepLab.string = "你先手";
     }
 
 
@@ -52,12 +75,15 @@ export default class GameController extends cc.Component {
             var itemNode = cc.instantiate(this.item);
             var animal = itemNode.getComponent(Animal);
             
-            animal.front.removeChild(animal.front);
+            animal.node.removeChild(animal.front);
             animal.front = front;
-            animal.node.addChild(front);
+            animal.node.insertChild(front,0);
             animal.front.width = 110;
             animal.front.height = 140;
-
+            animal.rank = i%8;
+            animal.isRed = i >= 8;
+            animal.back.active = true;
+        
             datas[i] = itemNode;
             this.node.addChild(itemNode);
         }
@@ -81,7 +107,7 @@ export default class GameController extends cc.Component {
         var animalW = 110;
         var animalH = 140;
         var spaceW = (this.node.width - 4 * animalW) / 5;
-        var spaceH = (this.node.height - 4 * animalH) / 5
+        var spaceH = (this.node.height - 4 * animalH) / 5;
 
         for (let i = 0; i < 16; i++) {
             const animalNode = this.result[Math.floor(i/4)][i%4];
@@ -91,21 +117,176 @@ export default class GameController extends cc.Component {
     }
 
 
-
+    /** action */
     animalClickAction(e: cc.Event.EventTouch) {
-        console.log(e.getLocationInView());
-        console.log(e.target);
+ 
+        let itemNode: cc.Node = e.target;
 
-        let node: cc.Node = e.target;
-        let animal: Animal = node.getComponent(Animal);
+        //开局第一步
+        if (this.me.isInit == false && this.other.isInit == false) {
+            this.nextStepWithInitPlayer(this.isMe,itemNode);
+            return;
+        } 
 
-        animal.isSelect = !animal.isSelect;
+        let animal: Animal = itemNode.getComponent(Animal);
+
+        if (animal.back.active) { //如果还没有翻牌 , 翻牌,切换选手
+            this.nextStepWithOpen(itemNode);
+        } else { // 已经翻开
+            if (this.selectdV2) {   //当已经选择了一个的时候
+                var selectNode:cc.Node = this.result[this.selectdV2.x][this.selectdV2.y];
+                var selectAnimal:Animal = selectNode.getComponent(Animal);
+                if (selectNode == itemNode) {   //选择的与刚才选的相同,则取消刚才的选择
+                    this.selectdV2 = null;
+                    animal.isSelect = false;
+                } else if(selectAnimal.isRed == animal.isRed) { //与刚才选择的是同色的: 取消掉刚才选的,选择新的
+                    selectAnimal.isSelect = false;
+                    this.selectdV2 = this.v2OfItemNode(itemNode);
+                    animal.isSelect = true;
+                } else {
+                    this.nextStepWithFromeTo(this.selectdV2,this.v2OfItemNode(itemNode))
+                }
+            } else if (!animal.isOver) {    //当还没有选择的时候,且操作的不是over的,选择一个,继续
+                var player:Player = this.isMe ? this.me : this.other;
+                if (player.isRed == animal.isRed) {
+                    this.selectdV2 = this.v2OfItemNode(itemNode);
+                    animal.isSelect = true;
+                } else {
+                    console.log("点了不是自己颜色方的动物");
+                }
+            }
+        }
+    }
+
+
+    
+
+    nextStepWithInitPlayer(isMe:boolean , itemNode:cc.Node)
+    {
+        let animal: Animal = itemNode.getComponent(Animal);
+        animal.back.active = false;
+
+        this.me.isRed = isMe ? animal.isRed : !animal.isRed;
+        this.other.isRed = isMe ? !animal.isRed : animal.isRed;
+        this.me.isInit = true;
+        this.other.isInit = true;
+
+        this.stateLab.string = this.me.isRed ? "我是红色方" : "我是蓝色方";
+        this.stateLab.node.color = this.me.isRed ? cc.Color.RED : cc.Color.BLUE;
+
+        this.isMe = !this.isMe;
+        
+    }
+
+    nextStepWithOpen(itemNode:cc.Node) 
+    {
+        if (this.selectdV2) {
+            var selectNode:cc.Node = this.result[this.selectdV2.x][this.selectdV2.y];
+            if (selectNode) {
+                let animal:Animal = selectNode.getComponent(Animal);
+                animal.isSelect = false;
+            }
+            this.selectdV2 = null;
+        }
+
+        let animal: Animal = itemNode.getComponent(Animal);
+        animal.back.active = false;
+
+        this.isMe = !this.isMe;
+    }
+
+    nextStepWithFromeTo(from:cc.Vec2 ,to:cc.Vec2)
+    {
+        var stepX = Math.abs(from.x - to.x);
+        var stepY = Math.abs(from.y - to.y);
+        if (stepX + stepY > 1  ) { 
+            console.log("没按规则走路 " + "from:" + from + " to:" + to );
+            return;
+        }
+
+        var fromNode:cc.Node = this.result[from.x][from.y];
+        var fromAnimal:Animal = fromNode.getComponent(Animal);
+        var toNode:cc.Node = this.result[to.x][to.y];
+        var toAnimal:Animal = toNode.getComponent(Animal);
+
+        if (toAnimal.isOver) { //正常走路
+            this.move(from,to);
+        } else {
+            var isBig = fromAnimal.isBigTo(toAnimal);
+            if (isBig == 0) {  // 相碰
+                this.moveWithEqual(from,to);
+            } else if (isBig == 1) { // 吃掉对方
+                this.moveWithBig(from,to);
+            } else { // 自杀
+                this.moveWithSmall(from,to);
+            }
+        }
+    }
+
+    move(from:cc.Vec2 ,to:cc.Vec2)
+    {
+
+    }
+
+    moveWithBig(from:cc.Vec2 ,to:cc.Vec2)
+    {
+
+    }
+
+    moveWithSmall(from:cc.Vec2 ,to:cc.Vec2)
+    {
+
+    }
+
+    moveWithEqual(from:cc.Vec2 ,to:cc.Vec2)
+    {
 
     }
 
 
+    
+    
 
 
+
+    update(dt) {
+
+
+    }
+
+    v2OfItemNode(itemNode:cc.Node) {
+        for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+                let tmpNode = this.result[i][j];
+                if (tmpNode == itemNode) {
+                    return cc.v2(i,j);
+                }
+            }
+        }
+        console.log("发现异常,没有找到选择的节点");
+    }
+
+    positionWithIndex(index:cc.Vec2) : cc.Vec2
+    {
+        var animalW = 110;
+        var animalH = 140;
+        var bgW = this.node.width;
+        var bgH = this.node.height;
+        var spaceW = (bgW - 4 * animalW) / 5;
+        var spaceH = (bgH - 4 * animalH) / 5;
+        
+        var x = -bgW/2 + (index.x+0.5)*animalW + spaceW*(index.x+1);
+        var y = -bgH/2 + (index.y+0.5)*animalH + spaceH*(index.y+1);
+        
+        return cc.v2(x,y);
+    }
+
+
+    updateStepLab()
+    {
+        var player:Player = this.isMe ?  this.me : this.other;
+        this.stepLab.string = player.isRed ? "红色方出手" : "蓝色方出手";
+    }
 
     // 随机排序函数
     randomSort(arr) {
@@ -123,12 +304,4 @@ export default class GameController extends cc.Component {
         return input;
     }
 
-
-
-
-
-    update(dt) {
-
-
-    }
 }

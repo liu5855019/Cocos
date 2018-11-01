@@ -19,14 +19,34 @@ export default class Animal extends cc.Component {
     @property(cc.Node) front: cc.Node = null;
     @property(cc.Node) back: cc.Node = null;
 
-    _isSelect: Boolean;
-    public get isSelect(): Boolean {
+    _isSelect = false;                 
+    public get isSelect(): boolean {
         return this._isSelect;
     }
-    public set isSelect(v: Boolean) {
+    public set isSelect(v: boolean) {
         this._isSelect = v;
         this.front.color = v ? cc.Color.RED : cc.Color.WHITE;
     }
+
+    /** 象 = 0 ,...., 老鼠 = 7 */
+    rank = -1;    
+
+    /** 是否是红色的 */
+    isRed = true;
+
+    /** 是否已经阵亡 */
+    _isOver = false;
+    public get isOver() : boolean {
+        return this._isOver
+    }
+    public set isOver(v : boolean) {
+        this._isOver = v;
+        if (v) {
+            this.isSelect = false;
+        }
+    }
+    
+    
 
 
     start() {
@@ -35,6 +55,24 @@ export default class Animal extends cc.Component {
         this.back.x = 0;
         this.back.y = 0;
     }
+
+    isBigTo(other:Animal) :number
+    {
+        if (this.rank == 7 && other.rank == 0) {
+            return 1;
+        }
+        if (this.rank == 0 && other.rank == 7) {
+            return -1;
+        }
+        if (this.rank == other.rank) {
+            return 0;
+        }
+        if (this.rank < other.rank) {
+            return 1;
+        }
+        return -1;
+    }
+
 
     // update (dt) {}
 }
