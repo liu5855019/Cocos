@@ -43,6 +43,7 @@ export default class Animal extends cc.Component {
         this._isOver = v;
         if (v) {
             this.isSelect = false;
+            this.front.active = false;
         }
     }
     

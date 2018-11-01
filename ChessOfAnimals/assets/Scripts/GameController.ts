@@ -118,8 +118,8 @@ export default class GameController extends cc.Component {
 
 
     /** action */
-    animalClickAction(e: cc.Event.EventTouch) {
- 
+    animalClickAction(e: cc.Event.EventTouch)
+     {
         let itemNode: cc.Node = e.target;
 
         //开局第一步
@@ -139,7 +139,7 @@ export default class GameController extends cc.Component {
                 if (selectNode == itemNode) {   //选择的与刚才选的相同,则取消刚才的选择
                     this.selectdV2 = null;
                     animal.isSelect = false;
-                } else if(selectAnimal.isRed == animal.isRed) { //与刚才选择的是同色的: 取消掉刚才选的,选择新的
+                } else if(selectAnimal.isRed == animal.isRed && !animal.isOver) { //与刚才选择的是同色的: 取消掉刚才选的,选择新的
                     selectAnimal.isSelect = false;
                     this.selectdV2 = this.v2OfItemNode(itemNode);
                     animal.isSelect = true;
@@ -172,7 +172,7 @@ export default class GameController extends cc.Component {
         this.other.isInit = true;
 
         this.stateLab.string = this.me.isRed ? "我是红色方" : "我是蓝色方";
-        this.stateLab.node.color = this.me.isRed ? cc.Color.RED : cc.Color.BLUE;
+        //this.stateLab.node.color = this.me.isRed ? cc.Color.RED : cc.Color.BLUE;
 
         this.isMe = !this.isMe;
         
@@ -180,6 +180,8 @@ export default class GameController extends cc.Component {
 
     nextStepWithOpen(itemNode:cc.Node) 
     {
+        console.log("翻牌");
+        
         if (this.selectdV2) {
             var selectNode:cc.Node = this.result[this.selectdV2.x][this.selectdV2.y];
             if (selectNode) {
@@ -221,26 +223,70 @@ export default class GameController extends cc.Component {
                 this.moveWithSmall(from,to);
             }
         }
+        this.isMe = !this.isMe;
+        this.selectdV2 = false;
     }
 
     move(from:cc.Vec2 ,to:cc.Vec2)
     {
+        console.log(from + "--->" + to + "正常移动");
+        
+        var fromNode:cc.Node = this.result[from.x][from.y];
+        var fromAnimal:Animal = fromNode.getComponent(Animal);
+        var toNode:cc.Node = this.result[to.x][to.y];
 
+        this.result[from.x][from.y] = toNode;
+        this.result[to.x][to.y] = fromNode;
+
+        fromAnimal.isSelect = false;
+        fromNode.setPosition(this.positionWithIndex(to));
+        toNode.setPosition(this.positionWithIndex(from));
     }
 
     moveWithBig(from:cc.Vec2 ,to:cc.Vec2)
     {
+        console.log(from + "--->" + to + "吃掉");
 
+        var fromNode:cc.Node = this.result[from.x][from.y];
+        var fromAnimal:Animal = fromNode.getComponent(Animal);
+        var toNode:cc.Node = this.result[to.x][to.y];
+        var toAnimal:Animal = toNode.getComponent(Animal);
+
+        this.result[from.x][from.y] = toNode;
+        this.result[to.x][to.y] = fromNode;
+
+        fromAnimal.isSelect = false;
+        toAnimal.isOver = true;
+
+        fromNode.setPosition(this.positionWithIndex(to));
+        toNode.setPosition(this.positionWithIndex(from));
     }
 
     moveWithSmall(from:cc.Vec2 ,to:cc.Vec2)
     {
+        console.log(from + "--->" + to + "自杀");
 
+        var fromNode:cc.Node = this.result[from.x][from.y];
+        var fromAnimal:Animal = fromNode.getComponent(Animal);
+        var toNode:cc.Node = this.result[to.x][to.y];
+        var toAnimal:Animal = toNode.getComponent(Animal);
+
+        fromAnimal.isSelect = false;
+        fromAnimal.isOver = true;
     }
 
     moveWithEqual(from:cc.Vec2 ,to:cc.Vec2)
     {
+        console.log(from + "--->" + to + "相撞");
 
+        var fromNode:cc.Node = this.result[from.x][from.y];
+        var fromAnimal:Animal = fromNode.getComponent(Animal);
+        var toNode:cc.Node = this.result[to.x][to.y];
+        var toAnimal:Animal = toNode.getComponent(Animal);
+
+        fromAnimal.isSelect = false;
+        fromAnimal.isOver = true;
+        toAnimal.isOver = true;
     }
 
 
@@ -275,8 +321,8 @@ export default class GameController extends cc.Component {
         var spaceW = (bgW - 4 * animalW) / 5;
         var spaceH = (bgH - 4 * animalH) / 5;
         
-        var x = -bgW/2 + (index.x+0.5)*animalW + spaceW*(index.x+1);
-        var y = -bgH/2 + (index.y+0.5)*animalH + spaceH*(index.y+1);
+        var x = -bgW/2 + (index.y+0.5)*animalW + spaceW*(index.y+1);
+        var y = -bgH/2 + (index.x+0.5)*animalH + spaceH*(index.x+1);
         
         return cc.v2(x,y);
     }
@@ -286,6 +332,7 @@ export default class GameController extends cc.Component {
     {
         var player:Player = this.isMe ?  this.me : this.other;
         this.stepLab.string = player.isRed ? "红色方出手" : "蓝色方出手";
+        this.stepLab.node.color = player.isRed ? cc.Color.RED : cc.Color.BLUE;
     }
 
     // 随机排序函数
