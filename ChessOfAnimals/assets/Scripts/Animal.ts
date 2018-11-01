@@ -8,25 +8,28 @@
 //  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
 
-const {ccclass, property} = cc._decorator;
+const {
+    ccclass,
+    property
+} = cc._decorator;
 
 @ccclass
 export default class Animal extends cc.Component {
 
-    @property(cc.Node) front : cc.Node = null;
-    @property(cc.Node) back : cc.Node = null;
+    @property(cc.Node) front: cc.Node = null;
+    @property(cc.Node) back: cc.Node = null;
 
-    _isSelect : Boolean;
-    public get isSelect() : Boolean {
+    _isSelect: Boolean;
+    public get isSelect(): Boolean {
         return this._isSelect;
     }
-    public set isSelect(v : Boolean) {
+    public set isSelect(v: Boolean) {
         this._isSelect = v;
         this.front.color = v ? cc.Color.RED : cc.Color.WHITE;
     }
-    
 
-    start () {
+
+    start() {
         this.front.x = 0;
         this.front.y = 0;
         this.back.x = 0;
