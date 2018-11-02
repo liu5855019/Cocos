@@ -224,7 +224,7 @@ export default class GameController extends cc.Component {
             }
         }
         this.isMe = !this.isMe;
-        this.selectdV2 = false;
+        this.selectdV2 = null;
     }
 
     move(from:cc.Vec2 ,to:cc.Vec2)
