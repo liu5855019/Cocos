@@ -13,14 +13,22 @@ const {ccclass, property} = cc._decorator;
 @ccclass
 export default class NewClass extends cc.Component {
 
-    private static engine = new MatchvsEngine();
-    private static response = new MatchvsResponse();
+    @property(cc.Label)
+    label: cc.Label = null;
 
+    @property
+    text: string = 'hello';
 
+    // LIFE-CYCLE CALLBACKS:
+
+    // onLoad () {}
 
     start () {
 
+        console.log("start");
+        
+
     }
 
-    
+    // update (dt) {}
 }
