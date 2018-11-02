@@ -1,3 +1,5 @@
+//import MsEngine from "./MsEngine";
+
 // Learn TypeScript:
 //  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/typescript.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/typescript.html
@@ -10,24 +12,24 @@
 
 const {ccclass, property} = cc._decorator;
 
+
+
 @ccclass
 export default class NewClass extends cc.Component {
 
-    @property(cc.Label)
-    label: cc.Label = null;
-
-    @property
-    text: string = 'hello';
+ 
 
     // LIFE-CYCLE CALLBACKS:
 
     // onLoad () {}
 
+    
+
     start () {
 
         console.log("start");
-        
 
+        MsEngine.getInstance();
     }
 
     // update (dt) {}
