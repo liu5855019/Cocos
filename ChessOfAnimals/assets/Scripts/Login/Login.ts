@@ -1,4 +1,4 @@
-//import MsEngine from "./MsEngine";
+import MsEngine from "./MsEngine";
 
 // Learn TypeScript:
 //  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -15,21 +15,21 @@ const {ccclass, property} = cc._decorator;
 
 
 @ccclass
-export default class NewClass extends cc.Component {
+export default class Login extends cc.Component {
 
- 
+    ms = MsEngine.getInstance();
 
-    // LIFE-CYCLE CALLBACKS:
 
-    // onLoad () {}
-
-    
+    onLoad () {}
 
     start () {
 
-        console.log("start");
+        console.log("Login start");
 
-        MsEngine.getInstance();
+        this.ms.init();
+        
+        this.ms.registerUser();
+
     }
 
     // update (dt) {}

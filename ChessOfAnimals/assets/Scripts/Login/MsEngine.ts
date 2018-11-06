@@ -1,28 +1,71 @@
 
 
-class MsEngine {
+
+const {ccclass, property} = cc._decorator;
+
+@ccclass
+export default class MsEngine extends cc.Component {
+
     private static _instance: MsEngine;
-    // public static engine: MatchvsEngine = new MatchvsEngine();
-    // public static response: MatchvsResponse = new MatchvsResponse();
-
-
-
+        engine: MatchvsEngine = new MatchvsEngine();
+        response: MatchvsResponse = new MatchvsResponse();
+    
     public static getInstance(): MsEngine {
         console.log("get");
-        
         if (MsEngine._instance == null) {
             MsEngine._instance = new MsEngine();
-            //  MatchvsLog.closeLog();
         }
         return MsEngine._instance;
     }
 
-    public init(): any {
+    init() {
         console.log("init");
+        this.response.initResponse = (status:number) => {
+            console.log("init response:" + status);
+            if(status == 200){
+                //成功
+            }else{
+                //失败
+            }
+        };
+
+        this.engine.init(this.response,"Matchvs", "alpha",202401 );
+    }
+
+    registerUser() {
+        this.response.registerUserResponse = (userInfo:MsRegistRsp) => {
+            console.log(userInfo);
+            
+        };
+
+        this.engine.registerUser();
+    }
+
+
+
+
+
+
+    start () {
+        console.log("MsEngine  start");
+    }
+
+    // update (dt) {}
+}
+
+
+
+
+
+
+
+
+//     public init(): any {
+//         console.log("init");
         
 
-        //return MsEngine.engine.init(MsEngine.response,"Matchvs", "alpha",202401 );
-    }
+//         //return MsEngine.engine.init(MsEngine.response,"Matchvs", "alpha",202401 );
+//     }
 
     // public uninit(): any {
     //     return MvsManager.engine.uninit();
@@ -89,4 +132,4 @@ class MsEngine {
     // public getRoomList(filter) {
     //     return MvsManager.engine.getRoomListEx(filter);
     // }
-}
+// }
