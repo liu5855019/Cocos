@@ -28,7 +28,7 @@ export default class Login extends cc.Component {
 
         this.ms.init();
         
-        this.ms.registerUser();
+        // this.ms.registerUser();
 
     }
 

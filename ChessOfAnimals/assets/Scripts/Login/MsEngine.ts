@@ -6,6 +6,9 @@ const {ccclass, property} = cc._decorator;
 @ccclass
 export default class MsEngine extends cc.Component {
 
+    //MsRegistRsp {status: 0, id: 1368202, userID: 1368202, token: "EAEAYQFAJURLOTYTWAMLZBPLLLZDYAGY", name: "玩家N2Zu8tcp", …}
+    public user:MsRegistRsp = null;
+
     private static _instance: MsEngine;
         engine: MatchvsEngine = new MatchvsEngine();
         response: MatchvsResponse = new MatchvsResponse();
@@ -22,10 +25,13 @@ export default class MsEngine extends cc.Component {
         console.log("init");
         this.response.initResponse = (status:number) => {
             console.log("init response:" + status);
+            console.log(this);
             if(status == 200){
                 //成功
+                this.registerUser();
             }else{
                 //失败
+                
             }
         };
 
@@ -34,10 +40,10 @@ export default class MsEngine extends cc.Component {
 
     registerUser() {
         this.response.registerUserResponse = (userInfo:MsRegistRsp) => {
-            console.log(userInfo);
-            
+            if (userInfo.status == 0) {
+                this.user = userInfo;
+            } 
         };
-
         this.engine.registerUser();
     }
 
