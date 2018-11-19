@@ -41,8 +41,8 @@
     },
     "_scale": {
       "__type__": "cc.Vec3",
-      "x": 0.4505644322078258,
-      "y": 0.4505644322078258,
+      "x": 0.7892595771653139,
+      "y": 0.7892595771653139,
       "z": 1
     },
     "_quat": {
@@ -78,17 +78,17 @@
         "__id__": 15
       },
       {
-        "__id__": 20
+        "__id__": 21
       }
     ],
     "_active": true,
     "_level": 0,
     "_components": [
       {
-        "__id__": 25
+        "__id__": 26
       },
       {
-        "__id__": 26
+        "__id__": 27
       }
     ],
     "_prefab": null,
@@ -921,7 +921,11 @@
     },
     "duration": 0.1,
     "zoomScale": 1.2,
-    "clickEvents": [],
+    "clickEvents": [
+      {
+        "__id__": 20
+      }
+    ],
     "_N$interactable": true,
     "_N$enableAutoGrayEffect": false,
     "_N$normalColor": {
@@ -962,6 +966,15 @@
     "_id": "abmgxA25tDbr4qC5ttRO05"
   },
   {
+    "__type__": "cc.ClickEvent",
+    "target": {
+      "__id__": 2
+    },
+    "component": "Login",
+    "handler": "createRoom",
+    "customEventData": ""
+  },
+  {
     "__type__": "cc.Node",
     "_name": "JoinRoom",
     "_objFlags": 0,
@@ -970,17 +983,17 @@
     },
     "_children": [
       {
-        "__id__": 21
+        "__id__": 22
       }
     ],
     "_active": true,
     "_level": 1,
     "_components": [
       {
-        "__id__": 23
+        "__id__": 24
       },
       {
-        "__id__": 24
+        "__id__": 25
       }
     ],
     "_prefab": null,
@@ -1034,14 +1047,14 @@
     "_name": "Label",
     "_objFlags": 0,
     "_parent": {
-      "__id__": 20
+      "__id__": 21
     },
     "_children": [],
     "_active": true,
     "_level": 0,
     "_components": [
       {
-        "__id__": 22
+        "__id__": 23
       }
     ],
     "_prefab": null,
@@ -1095,7 +1108,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 21
+      "__id__": 22
     },
     "_enabled": true,
     "_srcBlendFactor": 1,
@@ -1120,7 +1133,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 20
+      "__id__": 21
     },
     "_enabled": true,
     "_srcBlendFactor": 770,
@@ -1148,7 +1161,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 20
+      "__id__": 21
     },
     "_enabled": true,
     "transition": 2,
@@ -1204,7 +1217,7 @@
       "__uuid__": "29158224-f8dd-4661-a796-1ffab537140e"
     },
     "_N$target": {
-      "__id__": 20
+      "__id__": 21
     },
     "_id": "60SrTOO3ZHq6hkF28mQRNT"
   },

@@ -1,18 +1,8 @@
 import MsEngine from "./MsEngine";
 
-// Learn TypeScript:
-//  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/typescript.html
-//  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/typescript.html
-// Learn Attribute:
-//  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/reference/attributes.html
-//  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/reference/attributes.html
-// Learn life-cycle callbacks:
-//  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
-//  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
+
 
 const {ccclass, property} = cc._decorator;
-
-
 
 @ccclass
 export default class Login extends cc.Component {
@@ -28,9 +18,24 @@ export default class Login extends cc.Component {
 
         this.ms.init();
         
-        // this.ms.registerUser();
-
     }
+
+    
+
+    createRoom() {
+        this.ms.response.createRoomResponse = (rsp:MsCreateRoomRsp) => {
+            if (rsp.status == 200) {
+                console.log('创建房间成功');    
+            } else {
+                console.log('创建房间失败!');
+            }
+        };
+
+        this.ms.createRoom();
+    }
+
+
+
 
     // update (dt) {}
 }

@@ -6,7 +6,14 @@ const {ccclass, property} = cc._decorator;
 @ccclass
 export default class MsEngine extends cc.Component {
 
+    msInfo = {
+        gameId : 202401,
+        appKey : "6efa8c090fcd424787dd3d2da45d850a#M",
+        secretKey: "cfd414edafeb4438bb181c59c965e8f7"
+    };
+
     //MsRegistRsp {status: 0, id: 1368202, userID: 1368202, token: "EAEAYQFAJURLOTYTWAMLZBPLLLZDYAGY", name: "玩家N2Zu8tcp", …}
+    //{"status":0,"id":1506857,"userID":1506857,"token":"AMBIKQPGOYQWWVRKORYRSVDUCONSLBFU","name":"玩家cPx48VcW","avatar":"http://pic.vszone.cn/upload/avatar/1464079978.png"}
     public user:MsRegistRsp = null;
 
     private static _instance: MsEngine;
@@ -35,20 +42,45 @@ export default class MsEngine extends cc.Component {
             }
         };
 
-        this.engine.init(this.response,"Matchvs", "alpha",202401 );
+        this.engine.init(this.response,"Matchvs", "alpha",this.msInfo.gameId);
     }
 
     registerUser() {
         this.response.registerUserResponse = (userInfo:MsRegistRsp) => {
             if (userInfo.status == 0) {
                 this.user = userInfo;
-            } 
+                console.log('注册成功: '+userInfo.userID);
+                this.login();
+            } else {
+                console.log('注册用户失败!');
+            }
         };
         this.engine.registerUser();
     }
 
+    login() {
+        this.response.loginResponse = (rsp:MsLoginRsp) => {
+            if (rsp.status == 200) {
+                console.log('登录成功');
+            } else {
+                console.log('登录失败!');
+            }
+        };
+        this.engine.login(this.user.userID,
+                            this.user.token,
+                            this.msInfo.gameId,
+                            1,
+                            this.msInfo.appKey,
+                            this.msInfo.secretKey,
+                            "1",
+                            0);
+    }
 
 
+    createRoom() {
+        var info = new MsCreateRoomInfo(this.user.name+'的房间',2,0,2,0,'property');
+        this.engine.createRoom(info,"");
+    }
 
 
 
