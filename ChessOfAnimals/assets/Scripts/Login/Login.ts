@@ -1,13 +1,10 @@
 import MsEngine from "./MsEngine";
-
-
+import Toast from "../common/Toast";
 
 const {ccclass, property} = cc._decorator;
 
 @ccclass
 export default class Login extends cc.Component {
-
-    ms = MsEngine.getInstance();
 
     @property(cc.Button) loginBtn1: cc.Button = null;
     @property(cc.Button) loginBtn2: cc.Button = null;
@@ -15,7 +12,11 @@ export default class Login extends cc.Component {
 
     @property(cc.Prefab) createRoomPrefab:cc.Prefab = null;
 
-    onLoad () {}
+    ms:MsEngine = null;
+
+    onLoad () {
+        this.ms = MsEngine.getInstance();
+    }
 
     start () {
         console.log("Login start");
@@ -79,12 +80,10 @@ export default class Login extends cc.Component {
             createroomNode.setPosition(0,0);
             this.node.addChild(createroomNode);
         } else {
+            Toast.showText('login first');
             console.log('请先登录!');
         }
     }
-
-
-
 
     // update (dt) {}
 }
