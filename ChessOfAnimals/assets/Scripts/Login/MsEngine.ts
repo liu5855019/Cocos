@@ -6,15 +6,35 @@ const {ccclass, property} = cc._decorator;
 @ccclass
 export default class MsEngine extends cc.Component {
 
+    isInit:boolean = false;
+    isLogin:boolean = false;
+
     msInfo = {
         gameId : 202401,
         appKey : "6efa8c090fcd424787dd3d2da45d850a#M",
         secretKey: "cfd414edafeb4438bb181c59c965e8f7"
     };
 
-    //MsRegistRsp {status: 0, id: 1368202, userID: 1368202, token: "EAEAYQFAJURLOTYTWAMLZBPLLLZDYAGY", name: "玩家N2Zu8tcp", …}
-    //{"status":0,"id":1506857,"userID":1506857,"token":"AMBIKQPGOYQWWVRKORYRSVDUCONSLBFU","name":"玩家cPx48VcW","avatar":"http://pic.vszone.cn/upload/avatar/1464079978.png"}
-    public user:MsRegistRsp = null;
+    // user1:MsRegistRsp = new MsRegistRsp(0,1368202,"EAEAYQFAJURLOTYTWAMLZBPLLLZDYAGY","玩家N2Zu8tcp","http://pic.vszone.cn/upload/avatar/1464079978.png");
+    // user2:MsRegistRsp = new MsRegistRsp(0,1506857,"AMBIKQPGOYQWWVRKORYRSVDUCONSLBFU","玩家cPx48VcW","http://pic.vszone.cn/upload/avatar/1464079978.png");
+
+    user1 = {
+        status:0,
+        userID:1368202,
+        token:"EAEAYQFAJURLOTYTWAMLZBPLLLZDYAGY",
+        name:"User1",
+        avatar:"http://pic.vszone.cn/upload/avatar/1464079978.png"
+    }
+
+    user2 = {
+        status:0,
+        userID:1506857,
+        token:"AMBIKQPGOYQWWVRKORYRSVDUCONSLBFU",
+        name:"User2",
+        avatar:"http://pic.vszone.cn/upload/avatar/1464079978.png"
+    }
+
+    user = null;
 
     private static _instance: MsEngine;
         engine: MatchvsEngine = new MatchvsEngine();
@@ -29,16 +49,17 @@ export default class MsEngine extends cc.Component {
     }
 
     init() {
-        console.log("init");
         this.response.initResponse = (status:number) => {
             console.log("init response:" + status);
-            console.log(this);
             if(status == 200){
+                console.log('Init success!');
+                this.isInit = true;
                 //成功
-                this.registerUser();
-            }else{
+                //this.registerUser();
+            } else {
                 //失败
-                
+                console.log('Init failed!');
+                this.isInit = false;
             }
         };
 
@@ -50,7 +71,6 @@ export default class MsEngine extends cc.Component {
             if (userInfo.status == 0) {
                 this.user = userInfo;
                 console.log('注册成功: '+userInfo.userID);
-                this.login();
             } else {
                 console.log('注册用户失败!');
             }
@@ -58,14 +78,13 @@ export default class MsEngine extends cc.Component {
         this.engine.registerUser();
     }
 
-    login() {
-        this.response.loginResponse = (rsp:MsLoginRsp) => {
-            if (rsp.status == 200) {
-                console.log('登录成功');
-            } else {
-                console.log('登录失败!');
-            }
-        };
+    login(index:number) {
+        if (index == 1) {
+           this.user = this.user1; 
+        } else {
+            this.user = this.user2;
+        }
+
         this.engine.login(this.user.userID,
                             this.user.token,
                             this.msInfo.gameId,
@@ -77,8 +96,8 @@ export default class MsEngine extends cc.Component {
     }
 
 
-    createRoom() {
-        var info = new MsCreateRoomInfo(this.user.name+'的房间',2,0,2,0,'property');
+    createRoom(roomName:string) {
+        var info = new MsCreateRoomInfo(roomName,2,0,2,0,'property');
         this.engine.createRoom(info,"");
     }
 
