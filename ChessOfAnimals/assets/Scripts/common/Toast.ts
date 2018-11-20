@@ -5,19 +5,13 @@ var ToastConfig = {
     LENGTH_SHORT: 2,
     CENTER: 0,
     TOP: 1,
-    TOP_LEFT: 2,
-    LEFT: 3,
-    BOTTOM_LEFT: 4,
-    BOTTOM: 5,
-    BOTTOM_RIGHT: 6,
-    RIGHT: 7,
-    TOP_RIGHT: 8
+    BOTTOM: 2,
 }
 
 const {ccclass, property} = cc._decorator;
 
 @ccclass
-export default class Toast extends cc.Component {
+export default class Toast extends cc.Object  {
 
     text:string = null;
     duration:number = 0;

@@ -19,10 +19,13 @@ export default class CreateRoom extends cc.Component {
     }
 
 
+    clickCloseBtn() {
+        this.node.destroy();
+    }
+
     clickCreateRoomBtn() {
-        console.log(this.editBox.string);
-        
-        this.ms.createRoom(this.editBox.string)
+        this.ms.createRoom(this.editBox.string);
+        this.node.destroy();   
     }
 
     // update (dt) {}

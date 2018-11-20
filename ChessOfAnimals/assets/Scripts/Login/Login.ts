@@ -80,7 +80,7 @@ export default class Login extends cc.Component {
             createroomNode.setPosition(0,0);
             this.node.addChild(createroomNode);
         } else {
-            Toast.showText('login first');
+            Toast.showText('请先登录!');
             console.log('请先登录!');
         }
     }
