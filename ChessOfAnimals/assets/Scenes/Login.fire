@@ -41,8 +41,8 @@
     },
     "_scale": {
       "__type__": "cc.Vec3",
-      "x": 0.5199561225896492,
-      "y": 0.5199561225896492,
+      "x": 0.615625,
+      "y": 0.615625,
       "z": 1
     },
     "_quat": {
@@ -1872,6 +1872,9 @@
     },
     "createRoomPrefab": {
       "__uuid__": "865e9e17-9cc8-484a-8afa-ec6329b7be8a"
+    },
+    "roomDetailPrefab": {
+      "__uuid__": "7ccab06a-0a64-428b-b6d5-060db43da425"
     },
     "_id": "12v9/eGqxK36cr7ied8U3L"
   }

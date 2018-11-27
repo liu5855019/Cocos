@@ -6,11 +6,12 @@ const {ccclass, property} = cc._decorator;
 @ccclass
 export default class Login extends cc.Component {
 
-    @property(cc.Button) loginBtn1: cc.Button = null;
-    @property(cc.Button) loginBtn2: cc.Button = null;
-    @property(cc.Label) stateLab: cc.Label = null;
+    @property(cc.Button) loginBtn1 : cc.Button = null;
+    @property(cc.Button) loginBtn2 : cc.Button = null;
+    @property(cc.Label) stateLab : cc.Label = null;
 
-    @property(cc.Prefab) createRoomPrefab:cc.Prefab = null;
+    @property(cc.Prefab) createRoomPrefab : cc.Prefab = null;
+    @property(cc.Prefab) roomDetailPrefab : cc.Prefab = null;
 
     ms:MsEngine = null;
 
@@ -21,9 +22,9 @@ export default class Login extends cc.Component {
     start () {
         console.log("Login start");
 
-        this.ms.init();
-
         this.initMsResponse();
+
+        this.ms.init();
     }
 
     
@@ -64,10 +65,19 @@ export default class Login extends cc.Component {
         //创建房间的响应
         this.ms.response.createRoomResponse = (rsp:MsCreateRoomRsp) => {
             if (rsp.status == 200) {
-                console.log('创建房间成功');    
+                console.log('创建房间成功');   
+                var roomDetailNode = cc.instantiate(this.roomDetailPrefab);
+                roomDetailNode.setPosition(0,0);
+                this.node.addChild(roomDetailNode);
             } else {
                 console.log('创建房间失败!');
+                Toast.showText('创建房间失败!');
             }
+        };
+
+        this.ms.response.errorResponse = (errCode:number, errMsg:string) => {
+            console.log('---- error response ----');
+            console.log('errorCode: ' + errCode + ' errMsg: ' + errMsg );
         };
     }
 
